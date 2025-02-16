@@ -117,6 +117,10 @@ fn main() {
     println!("Use tab to cycle through answers, return to submit, escape to exit.\r");
     println!("Type letters for when answers do not exist.\r");
     println!("Or when the answer is infinite.\r");
+    println!("The answer should be correct to three decimal places.\r");
+
+    let mut correct: u32 = 0;
+    let mut total: u32 = 0;
 
     'outer: for i in selected.iter().cycle() {
         
@@ -131,6 +135,7 @@ fn main() {
         loop {
 
             for (i, v) in ansstr.iter().enumerate() {
+                print!("                            \r");
                 if i == ansind {
                     execute!(stdout(), SetBackgroundColor(Color::White), SetForegroundColor(Color::Black));
                 }
@@ -151,10 +156,16 @@ fn main() {
                             };
                         }
                         if q.verify(ans.as_mut_slice()) {
+                            execute!(stdout(), SetForegroundColor(Color::Green));
                             println!("Correct\r");
+                            execute!(stdout(), ResetColor);
+                            correct += 1;
                         } else {
+                            execute!(stdout(), SetForegroundColor(Color::Red));
                             println!("Incorrect\r");
+                            execute!(stdout(), ResetColor);
                         }
+                        total += 1;
                         break;
                     }
                     Ok(27) => {
@@ -188,5 +199,6 @@ fn main() {
     }
 
     let _ = disable_raw_mode();
+    println!("Your score is {}/{}, or {}%.", correct, total, (correct as f32) / (total as f32) * 100.0);
 
 }
