@@ -43,6 +43,7 @@ impl Question {
             }
             arr.push(*v as u8);
         }
+        arr.push(13);
         arr.push(10);
         let _ = stdout().write(arr.as_slice());
     }
