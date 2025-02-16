@@ -115,27 +115,65 @@ fn main() {
 
     execute!(stdout(), MoveDown(options.len() as u16));
     
-    for i in selected.iter().cycle() {
+
+    'outer: for i in selected.iter().cycle() {
         
         let q: Question = Question::from(options[*i]);
+        let mut ansind: usize = 0;
         q.print();
+        let mut ans: Vec<f32> = Vec::new();
+        let mut ansstr: Vec<String> = Vec::new();
+        ans.resize(q.cnt as usize, 0.0);
+        ansstr.resize(q.cnt as usize, String::new());
 
-        match initer.next() {
-            Some(res) => match res {
-                Ok(13) => {
+        loop {
+
+            for (i, v) in ansstr.iter().enumerate() {
+                if i == ansind {
+                    execute!(stdout(), SetBackgroundColor(Color::White), SetForegroundColor(Color::Black));
                 }
-                Ok(27) => {
-                    break;
+                print!("***");
+                if i == ansind {
+                    execute!(stdout(), ResetColor);
                 }
-                Ok(32) => {
-                }
-                Ok(ch) => {}
-                Err(_) => {}
+                println!(" {}\r", *v);
             }
-            None => {}
+
+            match initer.next() {
+                Some(res) => match res {
+                    Ok(13) => {
+                        break;
+                    }
+                    Ok(27) => {
+                        break 'outer;
+                    }
+                    Ok(9) => {
+                        ansind += 1;
+                        ansind %= ansstr.len();
+                    }
+                    Ok(ch) => {
+                        if ansstr[ansind] == "Nonexistant" {
+                            ansstr[ansind].clear();
+                        }
+                        if (ch >= 48 && ch <= 57) || ch == 46 || ch == 45 {
+                            ansstr[ansind].push(ch as char);
+                        } else if ch == 127 {
+                            ansstr[ansind].pop();
+                        } else {
+                            ansstr[ansind] = "Nonexistant".to_string();
+                        }
+                    }
+                    Err(_) => {}
+                }
+                None => {}
+            }
+
+            execute!(stdout(), MoveUp(ans.len() as u16));
+
         }
 
     }
 
     let _ = disable_raw_mode();
+
 }
