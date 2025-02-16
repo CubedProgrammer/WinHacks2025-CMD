@@ -113,8 +113,10 @@ fn main() {
 
     }
 
-    execute!(stdout(), MoveDown(options.len() as u16));
-    
+    execute!(stdout(), MoveDown(1));
+    println!("Use tab to cycle through answers, return to submit, escape to exit.\r");
+    println!("Type letters for when answers do not exist.\r");
+    println!("Or when the answer is infinite.\r");
 
     'outer: for i in selected.iter().cycle() {
         
