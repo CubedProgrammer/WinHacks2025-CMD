@@ -142,6 +142,17 @@ fn main() {
             match initer.next() {
                 Some(res) => match res {
                     Ok(13) => {
+                        for (u, v) in ans.iter_mut().zip(ansstr.iter_mut()) {
+                            *u = match v.parse::<f32>() {
+                                Ok(w) => w,
+                                Err(_) => f32::NAN
+                            };
+                        }
+                        if q.verify(ans.as_mut_slice()) {
+                            println!("Correct\r");
+                        } else {
+                            println!("Incorrect\r");
+                        }
                         break;
                     }
                     Ok(27) => {
