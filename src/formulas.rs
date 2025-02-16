@@ -5,7 +5,7 @@ use std::time::SystemTime;
 
 extern "C" {
     fn init_question(this: *mut Question, t: i32) -> i32;
-    fn verify(q: *const Question, given: *const f32) -> i32;
+    fn verify(q: *const Question, given: *mut f32) -> i32;
     fn init_random_seed(seed: u64);
 }
 
@@ -30,9 +30,9 @@ impl Question {
         }
         q
     }
-    pub fn verify(&self, given: &[f32]) -> bool {
+    pub fn verify(&self, given: &mut [f32]) -> bool {
         unsafe {
-            verify(self as *const Question, given.as_ptr()) == 1
+            verify(self as *const Question, given.as_mut_ptr()) == 1
         }
     }
     pub fn print(&self) {
@@ -44,7 +44,7 @@ impl Question {
             arr.push(*v as u8);
         }
         arr.push(10);
-        stdout().write(arr.as_slice());
+        let _ = stdout().write(arr.as_slice());
     }
 }
 
@@ -52,6 +52,6 @@ pub fn init_question_random_seed() {
     let curr = SystemTime::now();
     let dura = curr.duration_since(SystemTime::UNIX_EPOCH);
     unsafe {
-        init_random_seed(dura.unwrap().as_secs());
+        init_random_seed(dura.unwrap().as_millis() as u64);
     }
 }
